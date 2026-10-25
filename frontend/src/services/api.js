@@ -1,0 +1,5 @@
+const API_URL=import.meta.env.VITE_API_URL||'http://localhost:8000'
+const request=async(path,options={})=>{let r;try{r=await fetch(`${API_URL}${path}`,options)}catch{throw new Error('Unable to connect to AQUA SENTINEL AI backend.')}if(!r.ok){const body=await r.json().catch(()=>null);throw new Error(body?.detail?.message||body?.detail||'The requested operation could not be completed.')}if(r.status===204)return null;return r.json()}
+export const predictImage=file=>{const f=new FormData();f.append('file',file);return request('/predict',{method:'POST',body:f})}
+export const saveScan=prediction=>request('/scans',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prediction})})
+export const getScans=()=>request('/scans');export const getScan=id=>request(`/scans/${id}`);export const deleteScan=id=>request(`/scans/${id}`,{method:'DELETE'});export const getAnalytics=()=>request('/analytics');export const getHealth=()=>request('/health');export const generateReport=id=>request(`/reports/${id}`,{method:'POST'})
